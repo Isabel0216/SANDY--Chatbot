@@ -1,8 +1,12 @@
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from main import chat_with_bot, speak
 from flask_cors import CORS
+from dotenv import load_dotenv
 import io
 import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 CORS(app)
