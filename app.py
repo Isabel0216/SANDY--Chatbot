@@ -3,6 +3,9 @@ from main import chat_with_bot, speak
 from flask_cors import CORS
 import io
 
+from pydub.utils import which
+print("FFmpeg path:", which("ffmpeg"))
+
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 CORS(app)
 
