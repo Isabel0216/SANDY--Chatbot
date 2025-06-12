@@ -9,8 +9,16 @@ import threading # for asynchronous sound playback
 from typing import TYPE_CHECKING, Optional, Tuple, List 
 import traceback
 
-# Initialize OpenAI client 
-client = OpenAI()
+# Initialize OpenAI client with default settings
+try:
+    client = OpenAI(
+        api_key=os.getenv('OPENAI_API_KEY'),
+        base_url="https://api.openai.com/v1"
+    )
+except Exception as e:
+    print(f"Error initializing OpenAI client: {str(e)}")
+    traceback.print_exc()
+    raise
 
 # Conversation memory
 conversation_history = [
