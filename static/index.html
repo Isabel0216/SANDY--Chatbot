@@ -264,6 +264,9 @@
         // Function to handle Sandy's response
         async function getSandyResponse(userMessage) {
             try {
+                // Show thinking/question GIF while waiting for backend
+                changeSandyState(SANDY_STATES.QUESTION);
+
                 const response = await fetch('/chat_with_bot', {
                     method: 'POST',
                     headers: {
@@ -277,11 +280,10 @@
                 }
 
                 const data = await response.json();
-                
-                // Change to talking state before playing voice
-                changeSandyState(SANDY_STATES.TALKING);
-                
-                // Play Sandy's voice response
+                // Add message to chat immediately
+                addMessage(data.response);
+
+                // Fetch Sandy's voice response
                 const audioResponse = await fetch('/speak', {
                     method: 'POST',
                     headers: {
@@ -294,20 +296,17 @@
                     const audioBlob = await audioResponse.blob();
                     const audioUrl = URL.createObjectURL(audioBlob);
                     const audio = new Audio(audioUrl);
-                    
-                    // Add message to chat immediately
-                    addMessage(data.response);
-                    
+
+                    // Switch to talking GIF right before playing audio
+                    changeSandyState(SANDY_STATES.TALKING);
+
                     // Play audio and wait for it to finish
-                    await audio.play();
-                    
-                    // Wait for audio to finish before changing state back
+                    audio.play();
                     audio.onended = () => {
                         changeSandyState(SANDY_STATES.WAITING);
                     };
                 } else {
-                    // If audio failed, still show message and return to waiting state
-                    addMessage(data.response);
+                    // If audio failed, return to waiting state
                     changeSandyState(SANDY_STATES.WAITING);
                 }
 
@@ -324,6 +323,7 @@
             if (message) {
                 addMessage(message, true);
                 userInput.value = '';
+                // Set to question GIF immediately after sending
                 changeSandyState(SANDY_STATES.QUESTION);
                 getSandyResponse(message);
             }
