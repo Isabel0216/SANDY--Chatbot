@@ -4,9 +4,20 @@ from flask_cors import CORS
 import io
 
 import os
-print("FFmpeg system call:", os.system("ffmpeg -version"))
 from pydub.utils import which
+
+print("---- DEBUG: FFmpeg system call ----")
+os.system("ffmpeg -version")
+print("---- DEBUG: FFmpeg path (pydub) ----")
 print("FFmpeg path (pydub):", which("ffmpeg"))
+
+print("---- DEBUG: Letters directory contents ----")
+print("Current working directory:", os.getcwd())
+print("Letters dir exists:", os.path.isdir("letters"))
+if os.path.isdir("letters"):
+    print("Letters dir files:", os.listdir("letters"))
+else:
+    print("Letters dir NOT FOUND")
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 CORS(app)
