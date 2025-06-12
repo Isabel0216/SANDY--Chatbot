@@ -1,7 +1,7 @@
 import time
 import random
 import os
-from openai import OpenAI
+import openai
 import io 
 import uuid
 import string # For punctuation check in Animalese
@@ -9,12 +9,9 @@ import threading # for asynchronous sound playback
 from typing import TYPE_CHECKING, Optional, Tuple, List 
 import traceback
 
-# Initialize OpenAI client with default settings
+# Initialize OpenAI client with minimal configuration
 try:
-    client = OpenAI(
-        api_key=os.getenv('OPENAI_API_KEY'),
-        base_url="https://api.openai.com/v1"
-    )
+    openai.api_key = os.getenv('OPENAI_API_KEY')
 except Exception as e:
     print(f"Error initializing OpenAI client: {str(e)}")
     traceback.print_exc()
@@ -369,7 +366,7 @@ def chat_with_bot(user_input):
         conversation_history.append({"role": "user", "content": user_input})
         
         # Get response from OpenAI
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=conversation_history,
             max_tokens=150

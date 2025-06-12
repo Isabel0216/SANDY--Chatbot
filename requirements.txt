@@ -1,6 +1,6 @@
 flask==3.0.0
 flask-cors==4.0.0
-openai==1.2.3
+openai==0.28.1
 python-dotenv==1.0.0
 pydub==0.25.1
 Werkzeug==3.0.1
