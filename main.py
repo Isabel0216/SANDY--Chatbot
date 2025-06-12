@@ -1,21 +1,15 @@
 import time
 import random
 import os
-import openai
-import io 
+from openai import OpenAI
+import io # Added for in-memory sound playback
 import uuid
 import string # For punctuation check in Animalese
-import threading # for asynchronous sound playback
-from typing import TYPE_CHECKING, Optional, Tuple, List 
-import traceback
+import threading # Added for asynchronous sound playback
+from typing import TYPE_CHECKING, Optional, Tuple, List # Added TYPE_CHECKING, Optional
 
-# Initialize OpenAI client with minimal configuration
-try:
-    openai.api_key = os.getenv('OPENAI_API_KEY')
-except Exception as e:
-    print(f"Error initializing OpenAI client: {str(e)}")
-    traceback.print_exc()
-    raise
+# Initialize OpenAI client (will automatically use system environment variable OPENAI_API_KEY)
+client = OpenAI()
 
 # Conversation memory
 conversation_history = [
@@ -99,6 +93,8 @@ def print_slowly(text):
     print()
 
 # --- Animalese Voice Configuration ---
+# IMPORTANT: You need a 'letters/' directory in the same path as this script,
+# containing .wav files for each character (e.g., a.wav, b.wav, sh.wav, bebebese_slow.wav).
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ANIMALESE_LETTERS_DIR = os.path.join(SCRIPT_DIR, "letters")
 
@@ -113,7 +109,8 @@ ANIMALESE_PUNCTUATION_SOUND = "bebebese_slow" # Filename (no .wav) for punctuati
 ANIMALESE_SPEED_RANGE = (1.9, 2.6) # Min and Max speed factor, affects pitch too
 
 if TYPE_CHECKING:
-
+    # This is only for type hinting and won't cause a runtime ImportError
+    # if pydub is not installed.
     from pydub import AudioSegment as PydubAudioSegmentType
 
 def _remove_emojis_for_speech(text: str) -> str:
@@ -134,16 +131,15 @@ class AnimaleseSynthesizer:
                  punctuation_sound: str, speed_range: Tuple[float, float]):
         self.letters_dir = letters_dir
         self.letter_graphs = letter_graphs
-        self.digraphs = digraphs # This line was missing
+        self.digraphs = digraphs
         self.punctuation_sound = punctuation_sound
         self.speed_range = speed_range
 
         self.AudioSegment: Optional[type] = None
-        self.pydub_play: Optional[callable] = None
         self.CouldntEncodeError: Optional[type] = None
         self.CouldntDecodeError: Optional[type] = None
         self.is_ready = False
-        self.winsound_module: Optional[object] = None # For Windows-specific playback
+        self.winsound_module: Optional[object] = None  # Only for Windows
 
         try:
             from pydub import AudioSegment as PydubAudioSegmentImport
@@ -153,18 +149,22 @@ class AnimaleseSynthesizer:
             self.CouldntEncodeError = PydubCouldntEncodeErrorImport
             self.CouldntDecodeError = PydubCouldntDecodeErrorImport
             self.is_ready = True
-        except ImportError:
-            print_slowly("💬 To use my Animalese voice, I need the 'pydub' library.")
+        except ImportError as e:
+            print_slowly(f"💬 To use my Animalese voice, I need the 'pydub' library. {e}")
             print_slowly("   You can install it with: pip install pydub")
             print_slowly("   You'll also likely need FFmpeg installed and in your system's PATH.")
             print_slowly("   (Search 'install ffmpeg <your_os>' for instructions).")
-        
-        # Attempt to import winsound for fallback playback on Windows
-        try:
-            import winsound
-            self.winsound_module = winsound
-        except ImportError:
-            self.winsound_module = None # Not on Windows or winsound not available
+
+        # Only import winsound on Windows
+        import sys
+        if sys.platform == "win32":
+            try:
+                import winsound
+                self.winsound_module = winsound
+            except ImportError:
+                self.winsound_module = None
+        else:
+            self.winsound_module = None
 
     def _play_sound_in_thread(self, sound_bytes: bytes):
         """Plays sound bytes synchronously in a separate thread."""
@@ -179,7 +179,7 @@ class AnimaleseSynthesizer:
     def _sanitize_text_for_animalese(self, sentence: str) -> str:
         """Replaces or sanitizes characters for Animalese processing."""
         # Swear words (simple replacement)
-        swear_words = ["fuck", "shit", "piss", "crap", "bugger"] 
+        swear_words = ["fuck", "shit", "piss", "crap", "bugger"] # Could be a class/instance attribute
         for word in swear_words:
             sentence = sentence.replace(word, "*" * len(word))
         
@@ -246,7 +246,7 @@ class AnimaleseSynthesizer:
         return sound_with_altered_frame_rate.set_frame_rate(sound.frame_rate)
 
     def generate_and_play(self, text: str):
-        """Generates Animalese speech from text, saves it temporarily, and plays it."""
+        """Generates Animalese speech from text, saves it temporarily, and plays it (only on Windows)."""
         if not self.is_ready:
             return
 
@@ -261,11 +261,9 @@ class AnimaleseSynthesizer:
             print_slowly(f"   Make sure it exists and has all my .wav sound snippets!")
             return
 
-        # Sound will be played from memory, no temporary file needed for winsound playback itself.
         final_sound: Optional["PydubAudioSegmentType"] = None
 
         try:
-            # --- Sound Generation ---
             raw_sound = self._build_audio_segment(text_for_speech)
             if not raw_sound or len(raw_sound) == 0:
                 print_slowly("💬 (Animalese: Couldn't build any sound for that text.)")
@@ -273,53 +271,39 @@ class AnimaleseSynthesizer:
 
             speed_factor = random.uniform(self.speed_range[0], self.speed_range[1])
             final_sound = self._change_playback_speed(raw_sound, speed_factor)
-            # At this point, final_sound is an in-memory AudioSegment
 
-            # --- Playback Attempts ---
-            played_successfully = False
-
-            # Attempt winsound playback 
-            if self.winsound_module and final_sound:
+            # Only attempt playback on Windows
+            import sys
+            if self.winsound_module and final_sound and sys.platform == "win32":
                 try:
-                    # print_slowly("💬 (Preparing sound for in-memory winsound playback...)") # Suppressed for cleaner output
                     sound_bytes_io = io.BytesIO()
                     final_sound.export(sound_bytes_io, format="wav")
                     sound_bytes = sound_bytes_io.getvalue()
                     sound_bytes_io.close()
 
                     if sound_bytes:
-                        # print_slowly("💬 (Starting threaded in-memory winsound playback...)") # Suppressed for cleaner output
-                        # Play in a separate thread to not block the main flow
+                        import threading
                         playback_thread = threading.Thread(target=self._play_sound_in_thread, args=(sound_bytes,))
-                        playback_thread.daemon = True # Allows main program to exit even if thread is running
+                        playback_thread.daemon = True
                         playback_thread.start()
-                        played_successfully = True # Assume it started successfully
                     else:
                         print_slowly(f"🌊 Oh dear! Failed to get sound bytes for winsound playback.")
-
-                except (self.CouldntEncodeError, self.CouldntDecodeError) as e_export: # type: ignore
+                except (self.CouldntEncodeError, self.CouldntDecodeError) as e_export:
                     print_slowly(f"🌊 Drats! A little hiccup exporting my Animalese voice to memory (pydub/ffmpeg issue): {e_export}")
                 except Exception as e_winsound_prep:
                     print_slowly(f"🌊 Whoops! Something went wrong preparing for/during in-memory winsound playback: {e_winsound_prep}")
-            
-            elif not self.winsound_module and final_sound:
-                print_slowly("🌊 I generated my voice, but 'winsound' is not available on this system for playback.")
-                print_slowly("   (Winsound is typically available on Windows systems.)")
-
-            if not played_successfully:
-                print_slowly("🌊 I generated my voice, but couldn't play it using winsound.")
-
-        except (self.CouldntEncodeError, self.CouldntDecodeError) as e: # type: ignore
+            elif not self.winsound_module and final_sound and sys.platform != "win32":
+                print_slowly("🌊 I generated my voice, but playback is only supported on Windows (local testing). On servers, audio is sent to the frontend.")
+        except (self.CouldntEncodeError, self.CouldntDecodeError) as e:
             print_slowly(f"🌊 Drats! A little hiccup processing my Animalese voice (pydub/ffmpeg issue): {e}")
             print_slowly("   This usually means FFmpeg is missing or not set up right.")
             return
         except PermissionError:
             print_slowly(f"🌊 Oh no! A permission issue occurred while preparing the voice. 📁")
             return
-        except Exception as e: # Catch any other error during generation, export, or loading
+        except Exception as e:
             print_slowly(f"🌊 Yikes! Something unexpected happened with my Animalese voice: {e} 🎤")
             return
-        # No temporary file cleanup needed here as playback is from memory
 
 # Global instance for the synthesizer, initialized lazily
 _animalese_synthesizer: Optional[AnimaleseSynthesizer] = None
@@ -337,52 +321,78 @@ def _initialize_animalese_synthesizer():
         )
 
 def speak(text: str, return_bytes=False):
+    """
+    Converts text to Animalese speech using pydub and pre-recorded letter sounds.
+    If return_bytes is True, returns the sound data instead of playing it.
+    """
+    _initialize_animalese_synthesizer()
+    if not _animalese_synthesizer:
+        return None
+
+    text_for_speech = _remove_emojis_for_speech(text)
+    if not text_for_speech.strip():
+        return None
+
+    if not os.path.isdir(ANIMALESE_LETTERS_DIR):
+        return None
+
     try:
-        # Remove emojis for speech
-        processed_text = _remove_emojis_for_speech(text)
-        
-        # Initialize synthesizer if not done
-        if not hasattr(speak, 'synthesizer'):
-            speak.synthesizer = _initialize_animalese_synthesizer()
-        
-        if not speak.synthesizer or not speak.synthesizer.is_ready:
-            raise Exception("Animalese synthesizer not initialized properly")
-            
-        if return_bytes:
-            return speak.synthesizer.generate_audio_bytes(processed_text)
-        else:
-            speak.synthesizer.generate_and_play(processed_text)
-            
-    except Exception as e:
-        print(f"Error in speak function: {str(e)}")
-        traceback.print_exc()
-        if return_bytes:
+        # Generate sound
+        raw_sound = _animalese_synthesizer._build_audio_segment(text_for_speech)
+        if not raw_sound or len(raw_sound) == 0:
             return None
-        raise Exception(f"Failed to generate speech: {str(e)}")
+
+        speed_factor = random.uniform(ANIMALESE_SPEED_RANGE[0], ANIMALESE_SPEED_RANGE[1])
+        final_sound = _animalese_synthesizer._change_playback_speed(raw_sound, speed_factor)
+
+        if return_bytes and final_sound:
+            # Export to bytes for web playback
+            sound_bytes_io = io.BytesIO()
+            final_sound.export(sound_bytes_io, format="wav")
+            sound_bytes = sound_bytes_io.getvalue()
+            sound_bytes_io.close()
+            return sound_bytes
+        else:
+            # Play directly for console usage
+            _animalese_synthesizer.generate_and_play(text)
+            return None
+
+    except Exception as e:
+        print(f"Error generating sound: {e}")
+        return None
 
 def chat_with_bot(user_input):
+    global conversation_history, ocean_points
+    
     try:
-        # Add user's message to conversation history
+        # Add user message to history
         conversation_history.append({"role": "user", "content": user_input})
         
-        # Get response from OpenAI
-        response = openai.ChatCompletion.create(
+        # Get response
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=conversation_history,
-            max_tokens=150
+            temperature=0.7
         )
         
-        # Extract the bot's response
-        bot_response = response.choices[0].message.content
+        bot_reply = response.choices[0].message.content
         
-        # Add bot's response to conversation history
-        conversation_history.append({"role": "assistant", "content": bot_response})
+        # Add to history
+        conversation_history.append({"role": "assistant", "content": bot_reply})
         
-        return bot_response
+        # Award points for eco-awareness
+        if any(word in user_input.lower() for word in ["plastic", "clean", "recycle"]):
+            ocean_points += 1
+            bot_reply += f"\n🌱 PS: You earned an Ocean Hero point! Total: {ocean_points}/10"
+        
+        # Occasionally add fun facts 
+        if user_input.endswith("?") and random.random() < 0.4:
+            bot_reply += f"\n🐠 FUN FACT: {random.choice(FUN_FACTS)}"
+            
+        return bot_reply
+        
     except Exception as e:
-        print(f"Error in chat_with_bot: {str(e)}")
-        traceback.print_exc()
-        raise Exception(f"Failed to get response from OpenAI: {str(e)}")
+        return "🌊 Woops! My ocean internet is wavy... Can you repeat that?"
 
 def show_jellyfish_art():
     """Display ASCII art occasionally from the database"""
@@ -412,6 +422,6 @@ if __name__ == "__main__":
         
         # Speak the first line of the response asynchronously
         speak(response.split('\n')[0]) 
-        # Then print the full response slowly
+        # Then print the full response slowly; sound should play concurrently
         print_slowly(response)
         show_jellyfish_art()
