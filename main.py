@@ -2,13 +2,14 @@ import time
 import random
 import os
 from openai import OpenAI
-import io # Added for in-memory sound playback
+import io 
 import uuid
 import string # For punctuation check in Animalese
-import threading # Added for asynchronous sound playback
-from typing import TYPE_CHECKING, Optional, Tuple, List # Added TYPE_CHECKING, Optional
+import threading # for asynchronous sound playback
+from typing import TYPE_CHECKING, Optional, Tuple, List 
+import traceback
 
-# Initialize OpenAI client (will automatically use system environment variable OPENAI_API_KEY)
+# Initialize OpenAI client 
 client = OpenAI()
 
 # Conversation memory
@@ -93,8 +94,6 @@ def print_slowly(text):
     print()
 
 # --- Animalese Voice Configuration ---
-# IMPORTANT: You need a 'letters/' directory in the same path as this script,
-# containing .wav files for each character (e.g., a.wav, b.wav, sh.wav, bebebese_slow.wav).
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ANIMALESE_LETTERS_DIR = os.path.join(SCRIPT_DIR, "letters")
 
@@ -109,8 +108,7 @@ ANIMALESE_PUNCTUATION_SOUND = "bebebese_slow" # Filename (no .wav) for punctuati
 ANIMALESE_SPEED_RANGE = (1.9, 2.6) # Min and Max speed factor, affects pitch too
 
 if TYPE_CHECKING:
-    # This is only for type hinting and won't cause a runtime ImportError
-    # if pydub is not installed.
+
     from pydub import AudioSegment as PydubAudioSegmentType
 
 def _remove_emojis_for_speech(text: str) -> str:
@@ -176,7 +174,7 @@ class AnimaleseSynthesizer:
     def _sanitize_text_for_animalese(self, sentence: str) -> str:
         """Replaces or sanitizes characters for Animalese processing."""
         # Swear words (simple replacement)
-        swear_words = ["fuck", "shit", "piss", "crap", "bugger"] # Could be a class/instance attribute
+        swear_words = ["fuck", "shit", "piss", "crap", "bugger"] 
         for word in swear_words:
             sentence = sentence.replace(word, "*" * len(word))
         
@@ -275,7 +273,7 @@ class AnimaleseSynthesizer:
             # --- Playback Attempts ---
             played_successfully = False
 
-            # Attempt winsound playback (now the only method)
+            # Attempt winsound playback 
             if self.winsound_module and final_sound:
                 try:
                     # print_slowly("💬 (Preparing sound for in-memory winsound playback...)") # Suppressed for cleaner output
@@ -334,78 +332,52 @@ def _initialize_animalese_synthesizer():
         )
 
 def speak(text: str, return_bytes=False):
-    """
-    Converts text to Animalese speech using pydub and pre-recorded letter sounds.
-    If return_bytes is True, returns the sound data instead of playing it.
-    """
-    _initialize_animalese_synthesizer()
-    if not _animalese_synthesizer:
-        return None
-
-    text_for_speech = _remove_emojis_for_speech(text)
-    if not text_for_speech.strip():
-        return None
-
-    if not os.path.isdir(ANIMALESE_LETTERS_DIR):
-        return None
-
     try:
-        # Generate sound
-        raw_sound = _animalese_synthesizer._build_audio_segment(text_for_speech)
-        if not raw_sound or len(raw_sound) == 0:
-            return None
-
-        speed_factor = random.uniform(ANIMALESE_SPEED_RANGE[0], ANIMALESE_SPEED_RANGE[1])
-        final_sound = _animalese_synthesizer._change_playback_speed(raw_sound, speed_factor)
-
-        if return_bytes and final_sound:
-            # Export to bytes for web playback
-            sound_bytes_io = io.BytesIO()
-            final_sound.export(sound_bytes_io, format="wav")
-            sound_bytes = sound_bytes_io.getvalue()
-            sound_bytes_io.close()
-            return sound_bytes
+        # Remove emojis for speech
+        processed_text = _remove_emojis_for_speech(text)
+        
+        # Initialize synthesizer if not done
+        if not hasattr(speak, 'synthesizer'):
+            speak.synthesizer = _initialize_animalese_synthesizer()
+        
+        if not speak.synthesizer or not speak.synthesizer.is_ready:
+            raise Exception("Animalese synthesizer not initialized properly")
+            
+        if return_bytes:
+            return speak.synthesizer.generate_audio_bytes(processed_text)
         else:
-            # Play directly for console usage
-            _animalese_synthesizer.generate_and_play(text)
-            return None
-
+            speak.synthesizer.generate_and_play(processed_text)
+            
     except Exception as e:
-        print(f"Error generating sound: {e}")
-        return None
+        print(f"Error in speak function: {str(e)}")
+        traceback.print_exc()
+        if return_bytes:
+            return None
+        raise Exception(f"Failed to generate speech: {str(e)}")
 
 def chat_with_bot(user_input):
-    global conversation_history, ocean_points
-    
     try:
-        # Add user message to history
+        # Add user's message to conversation history
         conversation_history.append({"role": "user", "content": user_input})
         
-        # Get response
+        # Get response from OpenAI
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=conversation_history,
-            temperature=0.7
+            max_tokens=150
         )
         
-        bot_reply = response.choices[0].message.content
+        # Extract the bot's response
+        bot_response = response.choices[0].message.content
         
-        # Add to history
-        conversation_history.append({"role": "assistant", "content": bot_reply})
+        # Add bot's response to conversation history
+        conversation_history.append({"role": "assistant", "content": bot_response})
         
-        # Award points for eco-awareness
-        if any(word in user_input.lower() for word in ["plastic", "clean", "recycle"]):
-            ocean_points += 1
-            bot_reply += f"\n🌱 PS: You earned an Ocean Hero point! Total: {ocean_points}/10"
-        
-        # Occasionally add fun facts 
-        if user_input.endswith("?") and random.random() < 0.4:
-            bot_reply += f"\n🐠 FUN FACT: {random.choice(FUN_FACTS)}"
-            
-        return bot_reply
-        
+        return bot_response
     except Exception as e:
-        return "🌊 Woops! My ocean internet is wavy... Can you repeat that?"
+        print(f"Error in chat_with_bot: {str(e)}")
+        traceback.print_exc()
+        raise Exception(f"Failed to get response from OpenAI: {str(e)}")
 
 def show_jellyfish_art():
     """Display ASCII art occasionally from the database"""
@@ -435,6 +407,6 @@ if __name__ == "__main__":
         
         # Speak the first line of the response asynchronously
         speak(response.split('\n')[0]) 
-        # Then print the full response slowly; sound should play concurrently
+        # Then print the full response slowly
         print_slowly(response)
         show_jellyfish_art()
