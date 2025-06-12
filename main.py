@@ -1,15 +1,15 @@
 import time
 import random
 import os
-from openai import OpenAI
 import io # Added for in-memory sound playback
 import uuid
 import string # For punctuation check in Animalese
 import threading # Added for asynchronous sound playback
 from typing import TYPE_CHECKING, Optional, Tuple, List # Added TYPE_CHECKING, Optional
+import openai
 
 # Initialize OpenAI client (will automatically use system environment variable OPENAI_API_KEY)
-client = OpenAI()
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 # Conversation memory
 conversation_history = [
@@ -369,7 +369,7 @@ def chat_with_bot(user_input):
         conversation_history.append({"role": "user", "content": user_input})
         
         # Get response
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=conversation_history,
             temperature=0.7
