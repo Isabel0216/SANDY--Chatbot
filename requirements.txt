@@ -1,6 +1,6 @@
 Flask
 gunicorn
 flask-cors
-openai
+openai==0.28
 python-dotenv
 pydub 
