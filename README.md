@@ -21,16 +21,17 @@ Sandy is an interactive marine biology chatbot that combines the charm of Animal
 ## Project Structure 📁
 
 ```
-sandy-chatbot/
+SANDY--Chatbot/
 ├── app.py              # Flask application
-├── main.py            # Core chatbot logic
-├── requirements.txt   # Python dependencies
-├── vercel.json        # Vercel configuration
-├── static/           # Static assets
-│   ├── index.html    # Main webpage
-│   ├── UI_of_webpage/ # UI assets
-│   └── *.gif         # Sandy's animations
-└── letters/          # Voice synthesis audio files
+├── main.py             # Core chatbot logic
+├── requirements.txt    # Python dependencies
+├── Procfile            # For Render.com deployment
+├── render.yaml         # For Render.com build (installs ffmpeg)
+├── static/             # Static assets
+│   ├── index.html      # Main webpage
+│   ├── UI_of_webpage/  # UI assets
+│   ├── *.gif           # Sandy's animations
+├── letters/            # Voice synthesis audio files
 ```
 
 ## Setup and Deployment 🚀
@@ -49,7 +50,7 @@ sandy-chatbot/
 ## Credits 🙏
 
 - Character Design: Animal Crossing inspired
-- Voice Synthesis: Based on Animal Crossing's Animalese
+- Voice Synthesis: Based on Animal Crossing's Animalese by henryishuman (youtube: https://www.youtube.com/channel/UCD64_R7Npk6z0WqLxlekkUw)
 - Marine Biology Content: Powered by OpenAI GPT-3.5
 
 ## License 📄
