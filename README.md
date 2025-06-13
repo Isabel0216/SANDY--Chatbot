@@ -49,7 +49,7 @@ sandy-chatbot/
 ## Credits 🙏
 
 - Character Design: Animal Crossing inspired
-- Voice Synthesis: Based on Animal Crossing's Animalese by henryishuman (youtube: https://www.youtube.com/channel/UCD64_R7Npk6z0WqLxlekkUw)
+- Voice Synthesis: Based on Animal Crossing's Animalese
 - Marine Biology Content: Powered by OpenAI GPT-3.5
 
 ## License 📄
