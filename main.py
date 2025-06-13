@@ -1,11 +1,11 @@
 import time
 import random
 import os
-import io # Added for in-memory sound playback
+import io 
 import uuid
-import string # For punctuation check in Animalese
-import threading # Added for asynchronous sound playback
-from typing import TYPE_CHECKING, Optional, Tuple, List # Added TYPE_CHECKING, Optional
+import string # punctuation check in Animalese
+import threading # asynchronous sound playback
+from typing import TYPE_CHECKING, Optional, Tuple, List # Added TYPE_CHECKING
 import openai
 
 # Initialize OpenAI client (will automatically use system environment variable OPENAI_API_KEY)
@@ -106,11 +106,10 @@ ANIMALESE_LETTER_GRAPHS = [
 ]
 ANIMALESE_DIGRAPHS = ["ch", "sh", "ph", "th", "wh"]
 ANIMALESE_PUNCTUATION_SOUND = "bebebese_slow" # Filename (no .wav) for punctuation/pauses
-ANIMALESE_SPEED_RANGE = (1.9, 2.6) # Min and Max speed factor, affects pitch too
+ANIMALESE_SPEED_RANGE = (1.9, 2.6) 
 
 if TYPE_CHECKING:
-    # This is only for type hinting and won't cause a runtime ImportError
-    # if pydub is not installed.
+    # This is only for type hinting 
     from pydub import AudioSegment as PydubAudioSegmentType
 
 def _remove_emojis_for_speech(text: str) -> str:
