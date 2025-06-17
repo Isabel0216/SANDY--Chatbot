@@ -851,7 +851,12 @@
                 setTimeout(() => {
                     sandyGifLocked = false;
                     if (sandyGif.src.includes('BUBBLE_SANDY.gif')) {
-                        changeSandyState(SANDY_STATES.WAITING);
+                        // If Sandy is still typing/talking, switch to TALKING gif
+                        if (currentTyping && currentTyping.isTyping) {
+                            changeSandyState(SANDY_STATES.TALKING);
+                        } else {
+                            changeSandyState(SANDY_STATES.WAITING);
+                        }
                     }
                 }, 9000);
                 setTimeout(() => {
