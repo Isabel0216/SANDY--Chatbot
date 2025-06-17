@@ -27,7 +27,8 @@ SANDY--Chatbot/
 ├── requirements.txt    # Python dependencies
 ├── Procfile            # For Render.com deployment
 ├── render.yaml         # For Render.com build (installs ffmpeg)
-├── static/             # Static assets
+├── static/
+|   ├── BUTTONS_and_MUSIC  #Music and some assets
 │   ├── index.html      # Main webpage
 │   ├── UI_of_webpage/  # UI assets
 │   ├── *.gif           # Sandy's animations
@@ -51,6 +52,7 @@ SANDY--Chatbot/
 
 - Character Design: Animal Crossing inspired
 - Voice Synthesis: Based on Animal Crossing's Animalese by henryishuman (youtube: https://www.youtube.com/channel/UCD64_R7Npk6z0WqLxlekkUw)
+- Playlist by: Stream Cafe (Spotify: https://open.spotify.com/album/6IKXeZ7SroYsrslEacIjbP)
 - Marine Biology Content: Powered by OpenAI GPT-3.5
 
 ## License 📄
