@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sandy The Ocean Protector</title>
     <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Mulish:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -20,13 +22,14 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
+            cursor: url('/static/UI_of_webpage/STATIC_CURSOR.png'), auto;
         }
 
         .wave-ocean {
             position: fixed;
             bottom: -300px;  
-            right: -250px;  
-            width: 130%;    
+            right: -250px;   
+            width: 130%;     
             z-index: 1;
             animation: floatWave 8s ease-in-out infinite;
             transform-origin: bottom right;
@@ -86,7 +89,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            background: rgba(255, 243, 224, 0.9);  /* Cream color with transparency */
+            background: rgba(255, 243, 224, 0.9);  
             border-radius: 20px;
             padding: 12px;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
@@ -97,7 +100,7 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            width: 65%;  /* Reduced from 80% */
+            width: 65%;  
             height: auto;
         }
 
@@ -211,6 +214,248 @@
             scrollbar-width: thin;
             scrollbar-color: #5EB3D1 rgba(255, 255, 255, 0.4);
         }
+
+        /* Audio Control Buttons */
+        .audio-controls {
+            position: fixed;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1000;
+            align-items: center;
+        }
+
+        .audio-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        .audio-button:hover {
+            transform: scale(1.1);
+        }
+
+        .audio-button img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .audio-label {
+            font-family: 'Mulish', sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff5da;
+            margin-bottom: 0px;
+            margin-top: -10px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.18);
+        }
+
+        .codedex-badge {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 9999;
+            user-select: none;
+            padding: 10px 16px;
+            background: rgba(2, 6, 23, 0.5);
+            border-radius: 30px;
+            display: flex;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .codedex-badge:hover, .codedex-badge:active, .codedex-badge:focus {
+            background: rgba(30, 41, 59, 0.9);
+            cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
+        }
+        .codedex-img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            object-fit: cover;
+        }
+        .codedex-badge .built-on-text {
+            font-family: 'Mulish', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: #fff;
+        }
+        .codedex-badge .codedex-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+        .ig-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            user-select: none;
+            padding: 10px 16px;
+            background: rgba(2, 6, 23, 0.5);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .ig-badge:hover, .ig-badge:active, .ig-badge:focus {
+            background: rgba(30, 41, 59, 0.9);
+        }
+        .ig-img {
+            width: 38px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+        .ig-label {
+            font-family: 'Mulish', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+        /* Bubbles Easter Egg */
+        .bubbles-container {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 2000;
+        }
+        .bubble {
+            position: absolute;
+            bottom: 0;
+            border-radius: 50%;
+            background: rgba(173, 216, 230, 0.7);
+            animation: bubbleUp 9s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+            transition: transform 0.2s, opacity 0.2s;
+            cursor: pointer;
+            box-shadow: 0 0 12px 4px rgba(255,255,255,0.5), 0 0 24px 8px rgba(173,216,230,0.3);
+            /* highlight effect */
+        }
+        .bubble::after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 18%;
+            left: 22%;
+            width: 30%;
+            height: 18%;
+            background: linear-gradient(120deg, rgba(255,255,255,0.7) 60%, rgba(255,255,255,0.1) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .bubble.popped {
+            animation: popBubble 0.3s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+        }
+        @keyframes bubbleUp {
+            0% {
+                transform: translateY(30vh) scale(1); /* Start below the visible area */
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            60% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+        @keyframes popBubble {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+        a:not(.codedex-badge):hover, button:hover, input:hover, .audio-button:hover, .ig-badge:hover, .ig-badge:active, .ig-badge:focus, .bubble:hover {
+            cursor: url('/static/UI_of_webpage/HOVER_CURSOR.png'), pointer;
+        }
+        .loading-indicator {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            font-size: 1.5em;
+            color: #3bb6e6;
+            margin: 8px 0 8px 0;
+        }
+        .loading-dot {
+            animation: blink 1.2s infinite both;
+        }
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes blink {
+            0%, 80%, 100% { opacity: 0.2; }
+            40% { opacity: 1; }
+        }
+        #popup-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.45);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #popup-window {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        #popup-img {
+            display: block;
+            max-width: 90vw;
+            max-height: 80vh;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        }
+        #popup-close {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            background: rgba(255,255,255,0.85);
+            border: none;
+            font-size: 2rem;
+            color: #333;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 2;
+        }
+        #popup-close:hover {
+            background: #e0e0e0;
+        }
     </style>
 </head>
 <body>
@@ -234,6 +479,49 @@
         </div>
     </div>
 
+    <!-- Add audio controls -->
+    <div class="audio-controls">
+        <button class="audio-button" id="musicToggle">
+            <img src="/static/BUTTONS_and_MUSIC/MUSIC_ON.png" alt="Toggle Music" id="musicIcon">
+        </button>
+        <span class="audio-label">Music</span>
+        <button class="audio-button" id="audioToggle">
+            <img src="/static/BUTTONS_and_MUSIC/AUDIO_ON.png" alt="Toggle Audio" id="audioIcon">
+        </button>
+        <span class="audio-label">Audio</span>
+    </div>
+
+    <!-- Add background music -->
+    <audio id="backgroundMusic" loop>
+        <source src="/static/BUTTONS_and_MUSIC/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Codédex badge -->
+    <a href="https://www.codedex.io/home" target="_blank" class="codedex-badge">
+        <span class="built-on-text">Built on</span>
+        <span style="display: flex; align-items: center; gap: 6px;">
+            <img src="https://www.codedex.io/images/coin-cropped.png" alt="Codédex Logo" class="codedex-img">
+            <span class="codedex-label">Codédex</span>
+        </span>
+    </a>
+
+    <!-- Instagram badge -->
+    <a href="https://www.instagram.com/1z4ai/" target="_blank" class="ig-badge">
+        <img src="/static/BUTTONS_and_MUSIC/IG.png" alt="Instagram" class="ig-img">
+        <span class="ig-label">1z4ai</span>
+    </a>
+
+    <!-- Bubbles Easter Egg Container -->
+    <div class="bubbles-container" id="bubblesContainer"></div>
+
+    <!-- POPUP WINDOW -->
+    <div id="popup-overlay" style="display:none;">
+        <div id="popup-window">
+            <img src="/static/UI_of_webpage/POP_UP_WINDOW.png" alt="Welcome" id="popup-img">
+            <button id="popup-close">&times;</button>
+        </div>
+    </div>
+
     <script>
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('user-input');
@@ -244,28 +532,227 @@
         const SANDY_STATES = {
             WAITING: '/static/WAITING_SANDY.gif',
             TALKING: '/static/TALKING_SANDY.gif',
-            QUESTION: '/static/Question_SANDY.gif'
+            QUESTION: '/static/Question_SANDY.gif',
+            BUBBLE: '/static/BUBBLE_SANDY.gif'
         };
 
-        // Function to add a message to the chat
-        function addMessage(message, isUser = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-            messageDiv.textContent = message;
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+        let currentTyping = {
+            message: '',
+            index: 0,
+            isTyping: false,
+            messageDiv: null,
+            audio: null,
+            audioUrl: null,
+            audioBlob: null
+        };
+
+        // Function to add a message to the chat with typing effect for Sandy
+        function addMessage(message, isUser = false, suppressAudio = false) {
+            if (isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message user-message';
+                messageDiv.textContent = message;
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            } else {
+                let i = 0;
+                let typingDone = false;
+                changeSandyState(SANDY_STATES.QUESTION);
+                currentTyping = {
+                    message,
+                    index: 0,
+                    isTyping: true,
+                    messageDiv: null,
+                    audio: null,
+                    audioUrl: null,
+                    audioBlob: null
+                };
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'message bot-message loading-indicator';
+                loadingDiv.innerHTML = '<span class="loading-dot">●</span><span class="loading-dot">●</span><span class="loading-dot">●</span>';
+                chatContainer.appendChild(loadingDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                function startTypingWithAudio(audio) {
+                    if (loadingDiv.parentNode) loadingDiv.remove();
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message bot-message';
+                    chatContainer.appendChild(messageDiv);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    currentTyping.messageDiv = messageDiv;
+                    if (!suppressAudio) {
+                        changeSandyState(SANDY_STATES.TALKING);
+                    }
+                    if (audio) {
+                        currentTyping.audio = audio;
+                        audio.play().catch(() => {});
+                        audio.onended = () => {
+                            if (!typingDone) changeSandyState(SANDY_STATES.WAITING);
+                            currentSandyAudio = null;
+                        };
+                    }
+                    typeChar();
+                }
+                function typeChar() {
+                    if (i <= message.length) {
+                        currentTyping.messageDiv.textContent = message.slice(0, i);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        currentTyping.index = i;
+                        i++;
+                        setTimeout(typeChar, 32);
+                    } else {
+                        typingDone = true;
+                        currentTyping.isTyping = false;
+                        if (suppressAudio) {
+                            changeSandyState(SANDY_STATES.WAITING);
+                        }
+                        if (currentSandyAudio && !currentSandyAudio.paused) {
+                            currentSandyAudio.pause();
+                            currentSandyAudio.currentTime = 0;
+                            changeSandyState(SANDY_STATES.WAITING);
+                        }
+                    }
+                }
+                if (isAudioEnabled && !suppressAudio) {
+                    fetch('/speak', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: message })
+                    })
+                    .then(audioResponse => audioResponse.ok ? audioResponse.blob() : null)
+                    .then(audioBlob => {
+                        if (audioBlob) {
+                            const audioUrl = URL.createObjectURL(audioBlob);
+                            const audio = new Audio(audioUrl);
+                            currentSandyAudio = audio;
+                            currentTyping.audioUrl = audioUrl;
+                            currentTyping.audioBlob = audioBlob;
+                            audio.onplay = () => {
+                                startTypingWithAudio(audio);
+                            };
+                            audio.play().catch(() => {
+                                changeSandyState(SANDY_STATES.WAITING);
+                                startTypingWithAudio(null);
+                            });
+                        } else {
+                            changeSandyState(SANDY_STATES.WAITING);
+                            startTypingWithAudio(null);
+                        }
+                    });
+                } else {
+                    startTypingWithAudio(null);
+                }
+            }
         }
 
         // Function to change Sandy's state
+        let sandyGifLocked = false;
         function changeSandyState(state) {
+            if (sandyGifLocked && state !== SANDY_STATES.BUBBLE) return;
             sandyGif.src = state;
+        }
+
+        // Audio Control Variables
+        let isAudioEnabled = true;  // Sandy's voice ON by default
+        let isMusicEnabled = false; // Music OFF by default
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const audioIcon = document.getElementById('audioIcon');
+        const musicIcon = document.getElementById('musicIcon');
+        let currentSandyAudio = null;
+
+        // Try to play music as soon as possible
+        function initializeAudio() {
+            updateAudioIcon();
+            updateMusicIcon();
+            backgroundMusic.volume = 0.3;
+            // Do not play music on load; only play when user enables
+        }
+
+        function playMusicOnInteraction() {
+            backgroundMusic.play();
+        }
+
+        // Toggle Sandy's voice
+        document.getElementById('audioToggle').addEventListener('click', () => {
+            isAudioEnabled = !isAudioEnabled;
+            updateAudioIcon();
+            if (!isAudioEnabled && currentSandyAudio) {
+                currentSandyAudio.pause();
+                currentSandyAudio.currentTime = 0;
+                currentSandyAudio = null;
+                changeSandyState(SANDY_STATES.WAITING);
+            } else if (isAudioEnabled && currentTyping.isTyping && currentTyping.audioBlob) {
+                // Always create a new Audio object and play from the current position
+                if (currentSandyAudio) {
+                    currentSandyAudio.pause();
+                    currentSandyAudio.currentTime = 0;
+                    currentSandyAudio = null;
+                }
+                const audioUrl = URL.createObjectURL(currentTyping.audioBlob);
+                const audio = new Audio(audioUrl);
+                currentSandyAudio = audio;
+                const totalChars = currentTyping.message.length;
+                const percent = currentTyping.index / totalChars;
+                audio.addEventListener('loadedmetadata', () => {
+                    audio.currentTime = percent * audio.duration;
+                    audio.play().catch(() => {});
+                });
+                audio.onended = () => {
+                    changeSandyState(SANDY_STATES.WAITING);
+                    currentSandyAudio = null;
+                };
+                changeSandyState(SANDY_STATES.TALKING);
+            }
+        });
+
+        // Toggle background music
+        document.getElementById('musicToggle').addEventListener('click', () => {
+            isMusicEnabled = !isMusicEnabled;
+            if (isMusicEnabled) {
+                backgroundMusic.play().catch(error => {
+                    console.log("Music play prevented:", error);
+                    isMusicEnabled = false;
+                    updateMusicIcon();
+                });
+            } else {
+                backgroundMusic.pause();
+            }
+            updateMusicIcon();
+        });
+
+        function updateAudioIcon() {
+            try {
+                audioIcon.src = isAudioEnabled ? 
+                    '/static/BUTTONS_and_MUSIC/AUDIO_ON.png' : 
+                    '/static/BUTTONS_and_MUSIC/AUDIO_OFF.png';
+            } catch (error) {
+                console.log("Audio icon update error:", error);
+            }
+        }
+
+        function updateMusicIcon() {
+            try {
+                musicIcon.src = isMusicEnabled ? 
+                    '/static/BUTTONS_and_MUSIC/MUSIC_ON.png' : 
+                    '/static/BUTTONS_and_MUSIC/MUSIC_OFF.png';
+            } catch (error) {
+                console.log("Music icon update error:", error);
+            }
         }
 
         // Function to handle Sandy's response
         async function getSandyResponse(userMessage) {
             try {
-                // Show thinking/question GIF while waiting for backend
+                // Show question GIF for a shorter time
                 changeSandyState(SANDY_STATES.QUESTION);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Add loading indicator
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'message bot-message loading-indicator';
+                loadingDiv.innerHTML = '<span class="loading-dot">●</span><span class="loading-dot">●</span><span class="loading-dot">●</span>';
+                chatContainer.appendChild(loadingDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
 
                 const response = await fetch('/chat_with_bot', {
                     method: 'POST',
@@ -280,37 +767,13 @@
                 }
 
                 const data = await response.json();
-                // Add message to chat immediately
+                // Remove loading indicator
+                loadingDiv.remove();
                 addMessage(data.response);
-
-                // Fetch Sandy's voice response
-                const audioResponse = await fetch('/speak', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ text: data.response })
-                });
-
-                if (audioResponse.ok) {
-                    const audioBlob = await audioResponse.blob();
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const audio = new Audio(audioUrl);
-
-                    // Switch to talking GIF right before playing audio
-                    changeSandyState(SANDY_STATES.TALKING);
-
-                    // Play audio and wait for it to finish
-                    audio.play();
-                    audio.onended = () => {
-                        changeSandyState(SANDY_STATES.WAITING);
-                    };
-                } else {
-                    // If audio failed, return to waiting state
-                    changeSandyState(SANDY_STATES.WAITING);
-                }
-
             } catch (error) {
+                // Remove loading indicator if present
+                const loadingDiv = document.querySelector('.loading-indicator');
+                if (loadingDiv) loadingDiv.remove();
                 console.error('Error:', error);
                 addMessage('Sorry, I had trouble processing that request. Please try again.');
                 changeSandyState(SANDY_STATES.WAITING);
@@ -337,43 +800,75 @@
             }
         });
 
-        // Initial message with synchronized animation
-        setTimeout(async () => {
-            const initialMessage = "Hi, I'm Sandy, a jellyfish and marine biologist. Let's talk!";
-            
-            // Change to talking state
-            changeSandyState(SANDY_STATES.TALKING);
-            
-            try {
-                const audioResponse = await fetch('/speak', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ text: initialMessage })
-                });
-
-                if (audioResponse.ok) {
-                    const audioBlob = await audioResponse.blob();
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const audio = new Audio(audioUrl);
-                    
-                    // Add message only once
-                    addMessage(initialMessage);
-                    
-                    // Play audio and wait for it to finish
-                    await audio.play();
-                    
-                    // Change state back to waiting when audio ends
-                    audio.onended = () => {
-                        changeSandyState(SANDY_STATES.WAITING);
-                    };
-                }
-            } catch (error) {
-                console.error('Error playing initial greeting:', error);
-                changeSandyState(SANDY_STATES.WAITING);
-            }
+        // Initial message
+        setTimeout(() => {
+            addMessage("Hi, I'm Sandy, a jellyfish and marine biologist. Let's talk!", false, true);
         }, 500);
+
+        // Ensure music tries to play as soon as the DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeAudio);
+
+        // Easter Egg: Show bubbles if user types 'bubbles'
+        function showBubbles() {
+            const container = document.getElementById('bubblesContainer');
+            container.innerHTML = '';
+            for (let i = 0; i < 24; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 30 + 20;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 100}vw`;
+                bubble.style.bottom = `${Math.random() * 10}px`;
+                bubble.style.animationDelay = `${Math.random() * 2}s`;
+                bubble.style.background = `rgba(173, 216, 230, ${Math.random() * 0.4 + 0.5})`;
+                // Make bubbles poppable
+                bubble.addEventListener('click', function popBubble() {
+                    bubble.classList.add('popped');
+                    setTimeout(() => {
+                        bubble.remove();
+                    }, 300);
+                });
+                // Remove bubble when it reaches the top
+                bubble.addEventListener('animationend', function() {
+                    if (!bubble.classList.contains('popped')) {
+                        bubble.remove();
+                    }
+                });
+                container.appendChild(bubble);
+            }
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 9000);
+        }
+
+        // Listen for 'bubbles' easter egg
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && userInput.value.trim().toLowerCase() === 'bubbles') {
+                sandyGifLocked = true;
+                changeSandyState(SANDY_STATES.BUBBLE);
+                showBubbles();
+                setTimeout(() => {
+                    sandyGifLocked = false;
+                    if (sandyGif.src.includes('BUBBLE_SANDY.gif')) {
+                        changeSandyState(SANDY_STATES.WAITING);
+                    }
+                }, 9000);
+                setTimeout(() => {
+                    addMessage('I love bubbles! 🫧');
+                }, 400);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show popup on page load
+            const popup = document.getElementById('popup-overlay');
+            const closeBtn = document.getElementById('popup-close');
+            popup.style.display = 'flex';
+            closeBtn.onclick = function() {
+                popup.style.display = 'none';
+            };
+        });
     </script>
 </body>
 </html> 
